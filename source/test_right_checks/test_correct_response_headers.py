@@ -14,15 +14,6 @@ characters_by_name = '/characters/{}'
 character_by_name = '/character/{}'
 reset = "/reset"
 
-# GET /characters
-# GET /character/{name}
-#
-# POST /character
-# PUT /character/{name}
-# DELETE /character/{name}
-#
-# POST /reset
-
 session = requests.Session()
 proxies = {}
 
