@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Проверка конективити
+Проверка работы методов без авторизации
 """
 
 import pytest
@@ -33,7 +33,7 @@ proxies = {
 def setup_module(module):
     print("module setup")
     session.proxies = proxies
-    session.auth = ('ya.shok.ya@yandex.ru', 'hgJH768Cv23')
+    # session.auth = ('ya.shok.ya@yandex.ru', 'hgJH768Cv23')
 
 
 def teardown_module(module):
@@ -43,42 +43,28 @@ def teardown_module(module):
 
 @pytest.fixture()
 def post_setup(request):
-    print('Change content-type')
     session.headers['Content-type'] = 'Application/json'
 
     def post_teardown():
-        print('Return content-type')
         session.headers.pop('Content-type')
 
     request.addfinalizer(post_teardown)
 
 
 # @pytest.mark.skip
-def test_get_characters():
+def test_get_characters_not_authorized():
     response = session.get(base_url.format(characters))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        response
-    )
-    assert response.ok
+    assert response.status_code == 401
 
 
 # @pytest.mark.skip
-def test_get_character_by_name(name: str = 'Ajak'):
+def test_get_character_by_name_not_authorized(name: str = 'Ajak'):
     response = session.get(base_url.format(character_by_name.format(name)))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
-    assert response.ok
+    assert response.status_code == 401
 
 
 # @pytest.mark.skip
-def test_post_character(post_setup):
+def test_post_character_not_authorized(post_setup):
     data = {
         "name": "xxx_777",
         "universe": "xxx_7771",
@@ -93,17 +79,11 @@ def test_post_character(post_setup):
         url=base_url.format(character),
         json=data
     )
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
-    assert response.ok
+    assert response.status_code == 401
 
 
 # @pytest.mark.skip
-def test_put_character_by_name(post_setup, name: str = 'Ajak'):
+def test_put_character_by_name_not_authorized(post_setup, name: str = 'Ajak'):
     data = {
         'education': 'Unrevealed',
         'height': 99,
@@ -117,34 +97,15 @@ def test_put_character_by_name(post_setup, name: str = 'Ajak'):
         url=base_url.format(character_by_name.format(name)),
         json=data
     )
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
-    assert response.ok
+    assert response.status_code == 401
 
 
 # @pytest.mark.skip
-def test_delete_character_by_name(name: str = 'Ajak'):
+def test_delete_character_by_name_not_authorized(name: str = 'Ajak'):
     response = session.delete(base_url.format(character_by_name.format(name)))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
-    assert response.ok
+    assert response.status_code == 401
 
 
-# @pytest.mark.skip
-def test_post_reset():
+def test_post_reset_not_authorized():
     response = session.post(base_url.format(reset))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
-    assert response.ok
+    assert response.status_code == 401

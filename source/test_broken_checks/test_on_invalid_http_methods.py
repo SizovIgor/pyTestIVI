@@ -71,7 +71,6 @@ class TestAllowedMethods:
         )
         assert expected_response_code == response.status_code, f'Response error message:\n{response.text}'
 
-
     @pytest.mark.parametrize("api_and_response", [
         ('/characters', 405),
         ('/character/Abyss', 405),
@@ -135,10 +134,10 @@ class TestAllowedMethods:
         assert expected_response_code == response.status_code, f'Response error message:\n{response.text}'
 
     @pytest.mark.parametrize("api_and_response", [
-        ('/characters', 405),
-        ('/character/Abyss', 405),
-        ('/character', 405),
-        ('/reset', 405)],
+        ('/characters', 200),
+        ('/character/Abyss', 200),
+        ('/character', 200),
+        ('/reset', 200)],
                              ids=ids
                              )
     def test_options_method(self, api_and_response):

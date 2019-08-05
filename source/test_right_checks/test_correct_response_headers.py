@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Проверка конективити
+Проверка правильности заголовков ответов
 """
 
 import pytest
@@ -43,11 +43,9 @@ def teardown_module(module):
 
 @pytest.fixture()
 def post_setup(request):
-    print('Change content-type')
     session.headers['Content-type'] = 'Application/json'
 
     def post_teardown():
-        print('Return content-type')
         session.headers.pop('Content-type')
 
     request.addfinalizer(post_teardown)
@@ -56,25 +54,13 @@ def post_setup(request):
 # @pytest.mark.skip
 def test_get_characters():
     response = session.get(base_url.format(characters))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        response
-    )
-    assert response.ok
+    assert str(response.headers['Content-type']).lower() == 'Application/json'.lower()
 
 
 # @pytest.mark.skip
 def test_get_character_by_name(name: str = 'Ajak'):
     response = session.get(base_url.format(character_by_name.format(name)))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
-    assert response.ok
+    assert str(response.headers['Content-type']).lower() == 'Application/json'.lower()
 
 
 # @pytest.mark.skip
@@ -93,13 +79,7 @@ def test_post_character(post_setup):
         url=base_url.format(character),
         json=data
     )
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
-    assert response.ok
+    assert str(response.headers['Content-type']).lower() == 'Application/json'.lower()
 
 
 # @pytest.mark.skip
@@ -117,34 +97,17 @@ def test_put_character_by_name(post_setup, name: str = 'Ajak'):
         url=base_url.format(character_by_name.format(name)),
         json=data
     )
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
-    assert response.ok
+    assert str(response.headers['Content-type']).lower() == 'Application/json'.lower()
 
 
 # @pytest.mark.skip
 def test_delete_character_by_name(name: str = 'Ajak'):
     response = session.delete(base_url.format(character_by_name.format(name)))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
-    assert response.ok
+    assert str(response.headers['Content-type']).lower() == 'Application/json'.lower()
 
 
 # @pytest.mark.skip
+# @pytest.mark.xfail()
 def test_post_reset():
     response = session.post(base_url.format(reset))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
-    assert response.ok
+    assert str(response.headers['Content-type']).lower() == 'Application/json'.lower()
