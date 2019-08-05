@@ -33,7 +33,7 @@ proxies = {
 def setup_module(module):
     print("module setup")
     session.proxies = proxies
-    session.auth = ('ya.shok.ya@yandex.ru', 'hgJH768Cv23')
+    session.auth = ('user', 'hgJH768Cv23')
 
 
 def teardown_module(module):

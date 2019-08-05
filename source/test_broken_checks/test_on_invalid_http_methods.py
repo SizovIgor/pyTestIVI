@@ -1,12 +1,6 @@
 import pytest
 import requests
 
-# from wemake_python_styleguide.violations.best_practices import (
-#     NegatedConditionsViolation,
-# )
-# from wemake_python_styleguide.visitors.ast.conditions import IfStatementVisitor
-
-
 base_url = 'http://rest.test.ivi.ru{}'
 characters = '/characters'
 character = '/character'
@@ -33,7 +27,7 @@ proxies = {
 def setup_module(module):
     print("module setup")
     session.proxies = proxies
-    session.auth = ('ya.shok.ya@yandex.ru', 'hgJH768Cv23')
+    session.auth = ('user', 'hgJH768Cv23')
 
 
 def teardown_module(module):
