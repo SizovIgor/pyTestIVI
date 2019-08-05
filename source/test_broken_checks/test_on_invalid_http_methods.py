@@ -42,40 +42,20 @@ def teardown_module(module):
 
 
 @pytest.fixture()
-def resource_setup(request):
+def post_setup(request):
     session.headers['Content-type'] = 'Application/json'
 
-    def resource_teardown():
+    def post_teardown():
         session.headers.pop('Content-type')
 
-    request.addfinalizer(resource_teardown)
+    request.addfinalizer(post_teardown)
 
 
-# @pytest.mark.skip
-def ptest_get_characters():
-    response = session.get(base_url.format(characters))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        response
-    )
-    assert response.ok
-
-
-#
-# @pytest.fixture(scope="class", params=[
-# ("abcdefg", "abcdefg?"),
-# ("abc", "abc!"),
-# ("abcde", "abcde.")],
-# )
-# def param_test_idfn(request):
-#     return request.param
 def ids(val):
     return f'api="{val[0]}"  code={val[1]}'
 
 
-class TestGetCharacters:
+class TestAllowedMethods:
 
     @pytest.mark.parametrize("api_and_response", [
         ('/characters', 405),
@@ -84,11 +64,8 @@ class TestGetCharacters:
         ('/reset', 200)],
                              ids=ids
                              )
-    def test_post_method(self, resource_setup, api_and_response):
+    def test_post_method(self, post_setup, api_and_response):
         api_method, expected_response_code = api_and_response
-        # print(
-        #     f'\nMethod: POST\nAPI: {api_method}\nExpected response code: {expected_response_code}\nResult: '
-        # )
         payload = {
             "name": "xxx_777",
             "universe": "xxx_7771",
@@ -104,18 +81,68 @@ class TestGetCharacters:
         )
         assert expected_response_code == response.status_code, f'Response error message:\n{response.text}'
 
-    def test_put_method(self):
-        # session.put(base_url.format(characters))
-        pass
+    @pytest.mark.parametrize("api_and_response", [
+        ('/characters', 405),
+        ('/character/Abyss', 200),
+        ('/character', 405),
+        ('/reset', 405)],
+                             ids=ids
+                             )
+    def test_put_method(self, post_setup, api_and_response):
+        api_method, expected_response_code = api_and_response
+        payload = {
+            "name": "Abyss",
+            "universe": "xxx_7771",
+            "education": "xxx_7772",
+            "weight": 777,
+            "height": 7.71,
+            "identity": "xxx_7773",
+            "other_aliases": "None"
+        }
+        response = session.put(
+            url=base_url.format(api_method),
+            json=payload
+        )
+        assert expected_response_code == response.status_code, f'Response error message:\n{response.text}'
 
-    def test_delete_method(self):
-        # session.delete(base_url.format(characters))
-        pass
+    @pytest.mark.parametrize("api_and_response", [
+        ('/characters', 405),
+        ('/character/Abyss', 200),
+        ('/character', 405),
+        ('/reset', 405)],
+                             ids=ids
+                             )
+    def test_delete_method(self, api_and_response):
+        api_method, expected_response_code = api_and_response
+        response = session.delete(
+            url=base_url.format(api_method),
+        )
+        assert expected_response_code == response.status_code, f'Response error message:\n{response.text}'
 
-    def test_options_method(self):
-        # session.options(base_url.format(characters))
-        pass
+    @pytest.mark.parametrize("api_and_response", [
+        ('/characters', 405),
+        ('/character/Abyss', 405),
+        ('/character', 405),
+        ('/reset', 405)],
+                             ids=ids
+                             )
+    def test_options_method(self, api_and_response):
+        api_method, expected_response_code = api_and_response
+        response = session.options(
+            url=base_url.format(api_method),
+        )
+        assert expected_response_code == response.status_code, f'Response error message:\n{response.text}'
 
-    def test_patch_method(self):
-        # session.patch(base_url.format(characters))
-        pass
+    @pytest.mark.parametrize("api_and_response", [
+        ('/characters', 405),
+        ('/character/Abyss', 405),
+        ('/character', 405),
+        ('/reset', 405)],
+                             ids=ids
+                             )
+    def test_patch_method(self, api_and_response):
+        api_method, expected_response_code = api_and_response
+        response = session.put(
+            url=base_url.format(api_method),
+        )
+        assert expected_response_code == response.status_code, f'Response error message:\n{response.text}'
