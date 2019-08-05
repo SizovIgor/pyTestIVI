@@ -58,6 +58,21 @@ def ids(val):
 class TestAllowedMethods:
 
     @pytest.mark.parametrize("api_and_response", [
+        ('/characters', 200),
+        ('/character/Abyss', 200),
+        ('/character', 405),
+        ('/reset', 405)],
+                             ids=ids
+                             )
+    def test_get_method(self, api_and_response):
+        api_method, expected_response_code = api_and_response
+        response = session.get(
+            url=base_url.format(api_method),
+        )
+        assert expected_response_code == response.status_code, f'Response error message:\n{response.text}'
+
+
+    @pytest.mark.parametrize("api_and_response", [
         ('/characters', 405),
         ('/character/Abyss', 405),
         ('/character', 200),
