@@ -14,21 +14,9 @@ characters_by_name = '/characters/{}'
 character_by_name = '/character/{}'
 reset = "/reset"
 
-# GET /characters
-# GET /character/{name}
-#
-# POST /character
-# PUT /character/{name}
-# DELETE /character/{name}
-#
-# POST /reset
 
 session = requests.Session()
-proxies = {
-    "http": "http://isizov:aa11aa11@proxy.tsc.ts:8080",
-    "https": "https://isizov:aa11aa11@proxy.tsc.ts:8080",
-}
-
+proxies = {}
 
 def setup_module(module):
     print("module setup")

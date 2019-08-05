@@ -25,10 +25,7 @@ reset = "/reset"
 # POST /reset
 
 session = requests.Session()
-proxies = {
-    "http": "http://isizov:aa11aa11@proxy.tsc.ts:8080",
-    "https": "https://isizov:aa11aa11@proxy.tsc.ts:8080",
-}
+proxies = {}
 
 
 def setup_module(module):
