@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """
-Проверка правильности заголовков ответов
+Проверка работы API-методов с валидными данными.
+
+setup_module: Предварительная настройка на уровне модуля.
+teardown_module: Действия по завершению всех тестов.
 """
 
 import pytest
@@ -18,22 +21,42 @@ session = requests.Session()
 proxies = {}
 
 
-def setup_module(module):
-    print("module setup")
+def setup_module(module) -> None:
+    """
+    Обязательно необходимо указать правильные значения username:password
+
+    :return: None
+    """
+    print("MODULE SETUP")
     session.proxies = proxies
     session.auth = ('username', 'password')
 
 
-def teardown_module(module):
+def teardown_module(module) -> None:
+    """
+    В данном случае закрытие сессии.
+
+    :return: None
+    """
     session.close()
-    print("module teardown")
+    print("MODULE TEARDOWN")
 
 
 @pytest.fixture()
-def post_setup(request):
+def post_setup(request) -> None:
+    """
+    Фикстура по обновлению заголовков для методов, на уровне теста, где необходимо отправлять json на сервер.
+
+    :return: None
+    """
     session.headers['Content-type'] = 'Application/json'
 
     def post_teardown():
+        """
+        Метод вызываемый для восстановления заголовков сессии, после выполнения теста.
+
+        :return: None
+        """
         session.headers.pop('Content-type')
 
     request.addfinalizer(post_teardown)
@@ -43,14 +66,27 @@ def post_setup(request):
 #     condition=session.get(base_url.format(characters)).status_code != 200,
 #     reason='The remote server is unavailable'
 # )
-class TestGetCharactersWithValidCases:
+class TestGetCharacters:
+    """
+    Тест-кейсы направленные на тестирование работы метода GET /characters
+    """
 
+    # ToDo: необходимо уточнить что должно быть в колеции по умолчанию (issue-#4)
     def test_first_query(self):
-        print('test_first_query')
+        """
+        Тест-кейс направленный на проверку количества персонажей в коллекции по умолчанию
+        """
         response = session.get(base_url.format(characters))
         assert len(response.json()['result']) >= 0
 
+    # ToDo: Необходимо заменить print на assert после исправления issue-#1
     def test_check_changed_data(self, post_setup):
+        """
+        Тест-кейс на проверку наличия внесенных измененний для персонажа в общем списке коллекции
+
+        :param post_setup: вызов фикстуры, для подготовки заголовков, для отправки json на сервер
+        :return: Fail/Pass
+        """
         response_source_data = session.get(base_url.format(characters))
         source_data_json = response_source_data.json()
         name = None
@@ -92,6 +128,11 @@ class TestGetCharactersWithValidCases:
             print(name_of_edu, name_of_edu == one_character['education'])
 
     def test_check_deleted_data(self):
+        """
+        Тест-кейс на проверку отсутствие удаленного персонажа в общем списке коллекции
+
+        :return:
+        """
         response_source_data = session.get(base_url.format(characters))
         source_data_json = response_source_data.json()
         name = None
@@ -122,6 +163,12 @@ class TestGetCharactersWithValidCases:
         # pytest.fail(f'Attetion! The characters with name {name} was not delete')
 
     def test_check_added_data(self, post_setup):
+        """
+        Тест-кейс на проверку наличия добавленного персонажа в общем списке коллекции
+
+        :param post_setup: вызов фикстуры, для подготовки заголовков, для отправки json на сервер
+        :return: Fail/Pass
+        """
         response_source_data = session.get(base_url.format(characters))
         source_data_json = response_source_data.json()['result']
         name = 'xxx_777_123_321'
@@ -154,6 +201,12 @@ class TestGetCharactersWithValidCases:
 
     # @pytest.mark.xfail
     def test_check_deleted_all_data(self, post_setup):
+        """
+        Тест-кейс на проверку восстановления общего списка коллекции до первоначального состояния
+
+        :param post_setup: вызов фикстуры, для подготовки заголовков, для отправки json на сервер
+        :return: Fail/Pass
+        """
         response_source_data = session.get(base_url.format(characters))
         source_data_json = response_source_data.json()['result']
         if len(source_data_json) == 0:
@@ -183,3 +236,38 @@ class TestGetCharactersWithValidCases:
 
         response_changed_data = session.get(base_url.format(characters))
         assert len(response_changed_data.json()['result']) == 0
+
+
+class TestGetCharacterByName:
+    """
+    Тест-кейсы направленные на тестирование работы метода GET /character/{name}
+    """
+    pass
+
+
+class TestPostCharacter:
+    """
+    Тест-кейсы направленные на тестирование работы метода POST /character
+    """
+    pass
+
+
+class TestPutCharacterByName:
+    """
+    Тест-кейсы направленные на тестирование работы метода PUT /character/{name}
+    """
+    pass
+
+
+class TestDeleteCharacterByName:
+    """
+    Тест-кейсы направленные на тестирование работы метода DELETE /character/{name}
+    """
+    pass
+
+
+class TestPostReset:
+    """
+    Тест-кейсы направленные на тестирование работы метода POST /reset
+    """
+    pass
