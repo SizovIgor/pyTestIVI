@@ -15,7 +15,7 @@ proxies = {}
 def setup_module(module):
     print("module setup")
     session.proxies = proxies
-    session.auth = ('user', 'hgJH768Cv23')
+    session.auth = ('username', 'password')
 
 
 def teardown_module(module):

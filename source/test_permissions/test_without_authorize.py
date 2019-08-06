@@ -14,9 +14,9 @@ characters_by_name = '/characters/{}'
 character_by_name = '/character/{}'
 reset = "/reset"
 
-
 session = requests.Session()
 proxies = {}
+
 
 def setup_module(module):
     print("module setup")

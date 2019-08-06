@@ -24,30 +24,25 @@ reset = "/reset"
 # POST /reset
 
 session = requests.Session()
-proxies = {
-    "http": "http://isizov:aa11aa11@proxy.tsc.ts:8080",
-    "https": "https://isizov:aa11aa11@proxy.tsc.ts:8080",
-}
+proxies = {}
 
 
 def setup_module(module):
-    print("module setup")
+    print("MODULE SETUP")
     session.proxies = proxies
-    session.auth = ('ya.shok.ya@yandex.ru', 'hgJH768Cv23')
+    session.auth = ('username', 'password')
 
 
 def teardown_module(module):
     session.close()
-    print("module teardown")
+    print("MODULE TEARDOWN")
 
 
 @pytest.fixture()
 def post_setup(request):
-    print('Change content-type')
     session.headers['Content-type'] = 'Application/json'
 
     def post_teardown():
-        print('Return content-type')
         session.headers.pop('Content-type')
 
     request.addfinalizer(post_teardown)
@@ -56,24 +51,12 @@ def post_setup(request):
 # @pytest.mark.skip
 def test_get_characters():
     response = session.get(base_url.format(characters))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        response
-    )
     assert response.ok
 
 
 # @pytest.mark.skip
 def test_get_character_by_name(name: str = 'Ajak'):
     response = session.get(base_url.format(character_by_name.format(name)))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
     assert response.ok
 
 
@@ -93,12 +76,6 @@ def test_post_character(post_setup):
         url=base_url.format(character),
         json=data
     )
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
     assert response.ok
 
 
@@ -117,34 +94,16 @@ def test_put_character_by_name(post_setup, name: str = 'Ajak'):
         url=base_url.format(character_by_name.format(name)),
         json=data
     )
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
     assert response.ok
 
 
 # @pytest.mark.skip
 def test_delete_character_by_name(name: str = 'Ajak'):
     response = session.delete(base_url.format(character_by_name.format(name)))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
     assert response.ok
 
 
 # @pytest.mark.skip
 def test_post_reset():
     response = session.post(base_url.format(reset))
-    print(
-        '\nstatus_code: ', response.status_code,
-        '\nreason: ', response.reason,
-        '\ntext: ', response.text,
-        '\n', response
-    )
     assert response.ok
