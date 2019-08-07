@@ -16,50 +16,15 @@ character = '/character'
 characters_by_name = '/characters/{}'
 character_by_name = '/character/{}'
 reset = "/reset"
-
-session = requests.Session()
-proxies = {}
+session = None
 
 
-def setup_module(module) -> None:
-    """
-    Обязательно необходимо указать правильные значения username:password
-
-    :return: None
-    """
-    print("MODULE SETUP")
-    session.proxies = proxies
-    session.auth = ('username', 'password')
-
-
-def teardown_module(module) -> None:
-    """
-    В данном случае закрытие сессии.
-
-    :return: None
-    """
+@pytest.yield_fixture(scope='module', autouse=True)
+def setup_and_teardown(create_session):
+    global session
+    session = create_session
+    yield
     session.close()
-    print("MODULE TEARDOWN")
-
-
-@pytest.fixture()
-def post_setup(request) -> None:
-    """
-    Фикстура по обновлению заголовков для методов, на уровне теста, где необходимо отправлять json на сервер.
-
-    :return: None
-    """
-    session.headers['Content-type'] = 'Application/json'
-
-    def post_teardown():
-        """
-        Метод вызываемый для восстановления заголовков сессии, после выполнения теста.
-
-        :return: None
-        """
-        session.headers.pop('Content-type')
-
-    request.addfinalizer(post_teardown)
 
 
 # @pytest.mark.xfail(
@@ -98,7 +63,6 @@ class TestGetCharacters:
                 pytest.skip(r'Response don\'t have characters')
         else:
             pytest.fail(r'Test failed because response don\'t have result field')
-            print('Response contain:', source_data_json)
 
         one_character = source_data_json['result'][0]
         one_character['education'] = 'something_universal-3345'
@@ -106,12 +70,9 @@ class TestGetCharacters:
             url=base_url.format(character_by_name.format(name)),
             json=one_character,
         )
-        print(response_change_data.request,
-              response_change_data.text,
-              response_change_data.ok, )
 
         if not response_change_data.ok:
-            print(response_change_data.text)
+            print(response_change_data.reason)
             pytest.fail('Response is not OK')
         response_changed_data = session.get(base_url.format(characters))
 
@@ -144,14 +105,13 @@ class TestGetCharacters:
                 pytest.skip(r'Response don\'t have characters')
         else:
             pytest.fail(r'Test failed because response don\'t have result field')
-            print('Response contain:', source_data_json)
 
         response_deleted_data = session.delete(
             url=base_url.format(character_by_name.format(name)),
         )
 
         if not response_deleted_data.ok:
-            print(response_deleted_data.text)
+            print(response_deleted_data.reason)
             pytest.fail('Response is not OK')
 
         response_changed_data = session.get(base_url.format(characters))
@@ -191,7 +151,7 @@ class TestGetCharacters:
         )
 
         if not response_added_data.ok:
-            print(response_added_data.text)
+            print(response_added_data.reason)
             pytest.fail('Response is not OK')
 
         response_changed_data = session.get(base_url.format(characters))
@@ -228,11 +188,8 @@ class TestGetCharacters:
 
         response_reset_data = session.post(base_url.format(reset))
         if not response_reset_data.ok:
-            print(response_reset_data.text)
+            print(response_reset_data.reason)
             pytest.fail('Response is not OK')
-        print(response_reset_data.request,
-              response_reset_data.text,
-              response_reset_data.ok, )
 
         response_changed_data = session.get(base_url.format(characters))
         assert len(response_changed_data.json()['result']) == 0
@@ -249,7 +206,74 @@ class TestPostCharacter:
     """
     Тест-кейсы направленные на тестирование работы метода POST /character
     """
-    pass
+
+    def test_on_latin_symbols(self):
+        """
+        Тест-кейс на проверку корректности работы сервера с латинскими символами
+
+        :return:
+        """
+        response_source_data = session.get(base_url.format(characters))
+        source_data_json = response_source_data.json()
+        name = None
+
+        if 'result' in source_data_json:
+            if len(source_data_json['result']) > 0:
+                name = source_data_json['result'][0]['name']
+            else:
+                pytest.skip(r'Response don\'t have characters')
+        else:
+            pytest.fail(r'Test failed because response don\'t have result field')
+
+        response_deleted_data = session.delete(
+            url=base_url.format(character_by_name.format(name)),
+        )
+
+        if not response_deleted_data.ok:
+            print(response_deleted_data.reason)
+            pytest.fail('Response is not OK')
+
+        response_changed_data = session.get(base_url.format(characters))
+        changed_data_json = response_changed_data.json()['result']
+        list_names = [k['name'] for k in changed_data_json]
+        assert name not in list_names
+        # if len(characters_list_by_name) > 0:
+        # print(f'Attetion! The characters with name {name} is duplicated {len(education)} times!')
+        # pytest.fail(f'Attetion! The characters with name {name} was not delete')
+
+    def test_on_cyrilic_symbols(self):
+        """
+        Тест-кейс на проверку корректности работы сервера с кирилическими символами
+
+        :return:
+        """
+        response_source_data = session.get(base_url.format(characters))
+        source_data_json = response_source_data.json()
+        name = None
+
+        if 'result' in source_data_json:
+            if len(source_data_json['result']) > 0:
+                name = source_data_json['result'][0]['name']
+            else:
+                pytest.skip(r'Response don\'t have characters')
+        else:
+            pytest.fail(r'Test failed because response don\'t have result field')
+
+        response_deleted_data = session.delete(
+            url=base_url.format(character_by_name.format(name)),
+        )
+
+        if not response_deleted_data.ok:
+            print(response_deleted_data.reason)
+            pytest.fail('Response is not OK')
+
+        response_changed_data = session.get(base_url.format(characters))
+        changed_data_json = response_changed_data.json()['result']
+        list_names = [k['name'] for k in changed_data_json]
+        assert name not in list_names
+        # if len(characters_list_by_name) > 0:
+        # print(f'Attetion! The characters with name {name} is duplicated {len(education)} times!')
+        # pytest.fail(f'Attetion! The characters with name {name} was not delete')
 
 
 class TestPutCharacterByName:

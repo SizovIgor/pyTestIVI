@@ -15,50 +15,15 @@ character = '/character'
 characters_by_name = '/characters/{}'
 character_by_name = '/character/{}'
 reset = "/reset"
-
-session = requests.Session()
-proxies = {}
+session = None
 
 
-def setup_module(module) -> None:
-    """
-    Обязательно необходимо указать правильные значения username:password
-
-    :return: None
-    """
-    print("MODULE SETUP")
-    session.proxies = proxies
-    session.auth = ('username', 'password')
-
-
-def teardown_module(module) -> None:
-    """
-    В данном случае закрытие сессии.
-
-    :return: None
-    """
+@pytest.yield_fixture(scope='module', autouse=True)
+def setup_and_teardown(create_session):
+    global session
+    session = create_session
+    yield
     session.close()
-    print("MODULE TEARDOWN")
-
-
-@pytest.fixture()
-def post_setup(request) -> None:
-    """
-    Фикстура по обновлению заголовков для методов, на уровне теста, где необходимо отправлять json на сервер.
-
-    :return: None
-    """
-    session.headers['Content-type'] = 'Application/json'
-
-    def post_teardown():
-        """
-        Метод вызываемый для восстановления заголовков сессии, после выполнения теста.
-
-        :return: None
-        """
-        session.headers.pop('Content-type')
-
-    request.addfinalizer(post_teardown)
 
 
 def ids(val) -> str:
