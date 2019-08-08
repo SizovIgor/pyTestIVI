@@ -217,7 +217,6 @@ class TestPostCharacter:
         response_source_data = session.get(base_url.format(characters))
         source_data_json = response_source_data.json()['result']
         name = random_different_language_symbols
-        print('Name: ', name)
         is_name_exists = bool(list(filter(lambda x: x['name'] == name, source_data_json)))
         if is_name_exists:
             name *= 2
@@ -247,7 +246,6 @@ class TestPostCharacter:
         assert name in new_names
         response_changed_data_by_name = session.get(base_url.format(character_by_name.format(name)))
         changed_data_by_name_json = response_changed_data_by_name.json()['result'][0]
-        print('changed_data_by_name_json: ', changed_data_by_name_json)
         assert changed_data_by_name_json == data
 
 

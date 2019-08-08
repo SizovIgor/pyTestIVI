@@ -12,7 +12,7 @@ cyrilic_letters = cyrilic_lowercase + cyrilic_uppercase
 
 @pytest.fixture(
     params=[cyrilic_letters, string.ascii_letters, string.punctuation],
-    ids=['cyrilic_letters', 'string.ascii_letters', 'string.punctuation']
+    ids=['cyrilic_letters', 'latin_letters', 'punctuation_symbols']
 )
 def random_different_language_symbols(request):
     string_length = 10
