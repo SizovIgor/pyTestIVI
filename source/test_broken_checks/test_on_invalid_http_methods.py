@@ -3,8 +3,6 @@
 """
 Проверки коректности ответа от сервера на запросы различными HTTP-методами
 
-setup_module: Предварительная настройка на уровне модуля.
-teardown_module: Действия по завершению всех тестов.
 """
 import pytest
 from source.option import *
@@ -12,6 +10,12 @@ from source.option import *
 
 @pytest.yield_fixture(scope='module', autouse=True)
 def setup_and_teardown(create_session):
+    """
+    Фикстура создающая настройки окружения для начала работы тестов.
+
+    :param create_session: вызов фикстуры для создания объекта сессии
+    :return: None
+    """
     global session
     session = create_session
     yield

@@ -2,9 +2,6 @@
 
 """
 Проверка правильности заголовков ответов
-
-setup_module: Предварительная настройка на уровне модуля.
-teardown_module: Действия по завершению всех тестов.
 """
 
 import pytest
@@ -13,6 +10,12 @@ from source.option import *
 
 @pytest.yield_fixture(scope='module', autouse=True)
 def setup_and_teardown(create_session):
+    """
+    Фикстура создающая настройки окружения для начала работы тестов.
+
+    :param create_session: вызов фикстуры для создания объекта сессии
+    :return: None
+    """
     global session
     session = create_session
     yield
@@ -104,8 +107,6 @@ def test_delete_character_by_name(name: str = 'Ajak'):
     assert str(response.headers['Content-type']).lower() == 'Application/json'.lower()
 
 
-# @pytest.mark.skip
-# @pytest.mark.xfail()
 def test_post_reset():
     """
     Тест-кейс направленный на проверку корректности заголовка от сервера в ответ на запрос POST /reset

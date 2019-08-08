@@ -2,9 +2,6 @@
 
 """
 Проверки коректности ответа от сервера на запросы различные запросы от неавторизованного пользователя
-
-setup_module: Предварительная настройка на уровне модуля.
-teardown_module: Действия по завершению всех тестов.
 """
 
 import pytest
@@ -13,6 +10,13 @@ from source.option import *
 
 @pytest.yield_fixture(scope='module', autouse=True)
 def setup_and_teardown(create_session, delete_auth):
+    """
+    Фикстура создающая настройки окружения для начала работы тестов.
+
+    :param create_session: вызов фикстуры для создания объекта сессии
+    :param delete_auth: вызов фикстуры для удаления авторизации из объекта сессии
+    :return: None
+    """
     global session
     session = create_session
     yield

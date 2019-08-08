@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+"""
+Файл фикстур, содержит в себе глобальные фикстуры всего проекта,
+например такие, как создание объекта сессии `create_session`,
+или обновление заголовков методов `post_setup`
+"""
 import pytest
 import requests
 from source.option import auth, proxies
@@ -5,22 +12,20 @@ from source.option import auth, proxies
 
 @pytest.fixture(scope='module')
 def create_session(request):
-    print(f'Create Session() for module: {request.node.name}')
+    """
+    Глобавльная Фикстура для создания объекта сессии, с которым будут работать тесты.
+    Вызывается для каждого модуля по отдельности
+
+    :param request: фикстура py.Test, используется для отображения названия модуля для которого создается объект сессии
+    :return: requests.Session
+    """
+    print(f'\nCreate Session() for module: {request.node.name}')
     global session
     session = requests.Session()
     session.trust_env = False
     session.proxies.update(proxies)
     session.auth = auth
     return session
-
-
-@pytest.yield_fixture(scope='module')
-def delete_auth(create_session: requests.Session):
-    create_session.auth = None
-    print('Auth was deleted')
-    yield
-    create_session.auth = auth
-    print('Auth was restored')
 
 
 @pytest.yield_fixture
