@@ -7,15 +7,7 @@ setup_module: Предварительная настройка на уровн�
 teardown_module: Действия по завершению всех тестов.
 """
 import pytest
-import requests
-
-base_url = 'http://rest.test.ivi.ru{}'
-characters = '/characters'
-character = '/character'
-characters_by_name = '/characters/{}'
-character_by_name = '/character/{}'
-reset = "/reset"
-session = None
+from source.option import *
 
 
 @pytest.yield_fixture(scope='module', autouse=True)
