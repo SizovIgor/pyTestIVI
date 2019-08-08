@@ -1,6 +1,6 @@
 proxies = {
 }
-auth = ('ya.shok.ya@yandex.ru', 'hgJH768Cv23')
+auth = ('username', 'password')
 
 base_url = 'http://rest.test.ivi.ru{}'
 characters = '/characters'
