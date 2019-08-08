@@ -1,23 +1,20 @@
 """
-Тут должны быть настройки для тестов соответствующей категории
+Файл фикстур, содержит в себе фикстуры для данной категории тестов.
 """
 import pytest
 import random
 import string
 
-
-@pytest.fixture(scope='module', params=["1", "2"])
-def delete_auth(request):
-    cyrilic_symbols = range(ord('А'), ord('я'))
-    rand_symbols = ''.join(chr(random.randint(cyrilic_symbols)) for i in range(10))
-    yield
-    print('Auth was restored')
+cyrilic_uppercase = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+cyrilic_lowercase = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
+cyrilic_letters = cyrilic_lowercase + cyrilic_uppercase
 
 
-@pytest.fixture(params=[0, 1], ids=["spam", "ham"])
-def a(request):
-    return request.param
-
-
-def test_a(a):
-    pass
+@pytest.fixture(
+    params=[cyrilic_letters, string.ascii_letters, string.punctuation],
+    ids=['cyrilic_letters', 'string.ascii_letters', 'string.punctuation']
+)
+def random_different_language_symbols(request):
+    string_length = 10
+    random_characters = request.param + string.digits + string.whitespace
+    return ''.join(random.choice(random_characters) for i in range(string_length))
